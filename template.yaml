@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  kitten
+
+  Sample SAM Template for kitten
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 30
+
+Resources:
+  PosiKittyFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: posi_kitty/
+      Handler: app.lambda_handler
+      Runtime: python3.7
+      Events:
+        PosiKitty:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /posi_kitty
+            Method: post
+      Environment:
+        Variables:
+          bot_token: some_token
+          cat_token: some_token
+          get_cat: https://api.thecatapi.com/v1/images/search
+          open_conversation: https://slack.com/api/conversations.open
+          post_message: https://slack.com/api/chat.postMessage
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  PosiKittyApi:
+    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/posi_kitty/"
+  PosiKittyFunction:
+    Description: "Hello World Lambda Function ARN"
+    Value: !GetAtt PosiKittyFunction.Arn
+  PosiKittyFunctionIamRole:
+    Description: "Implicit IAM Role created for Hello World function"
+    Value: !GetAtt PosiKittyFunctionRole.Arn
